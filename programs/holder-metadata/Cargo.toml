@@ -16,8 +16,8 @@ cpi = ["no-entrypoint"]
 default = []
 
 [dependencies]
-anchor-lang = "0.29.0"
-anchor-spl = "0.29.0"
+anchor-lang = { git = "https://github.com/bridgesplit/anchor.git", features = ["interface-instructions", "init-if-needed"] }
+anchor-spl = { git = "https://github.com/bridgesplit/anchor.git", features = ["token_2022_extensions", "token_2022"] }
 spl-token-metadata-interface = "0.2.0"
 field-authority-interface = { version = "0.2.0", path = "../../programs-vanilla/field-authority-interface" }
 spl-pod = "0.1.0"
