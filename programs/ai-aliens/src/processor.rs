@@ -6,7 +6,6 @@ use crate::instructions::*;
 use anchor_lang::{prelude::*, solana_program::program::invoke_signed};
 use anchor_spl::token_interface::{mint_to, MintTo};
 use holder_metadata::{state::AnchorField, HOLDER_METADATA_PDA_SEED};
-use spl_token_2022::{extension::metadata_pointer, instruction::initialize_mint2};
 
 pub fn handle_update_state(
     ctx: Context<UpdateState>,
@@ -38,37 +37,6 @@ fn pay_mint_price(ctx: &Context<CreateMint>) -> Result<()> {
         ctx.accounts.ai_aliens_pda.to_account_info(),
     ];
     anchor_lang::solana_program::program::invoke(ix, accounts)?;
-
-    Ok(())
-}
-
-fn init_mp_ext(ctx: &Context<CreateMint>) -> Result<()> {
-    let ix = metadata_pointer::instruction::initialize(
-        ctx.accounts.token_program.key,
-        &ctx.accounts.mint.key(),
-        Some(ctx.accounts.ai_aliens_pda.key()),
-        Some(ctx.accounts.metadata.key()),
-    )?;
-    let accounts = [ctx.accounts.mint.to_account_info()];
-    let ai_aliens_pda_seeds = [AI_ALIENS_PDA_SEED.as_bytes(), &[ctx.bumps.ai_aliens_pda]];
-    let signer_seeds = [&ai_aliens_pda_seeds[..]];
-    invoke_signed(&ix, &accounts, &signer_seeds)?;
-
-    Ok(())
-}
-
-fn init_mint(ctx: &Context<CreateMint>) -> Result<()> {
-    let ix = initialize_mint2(
-        ctx.accounts.token_program.key,
-        &ctx.accounts.mint.key(),
-        &ctx.accounts.ai_aliens_pda.key(),
-        Some(&ctx.accounts.ai_aliens_pda.key()),
-        0,
-    )?;
-    let accounts = [ctx.accounts.mint.to_account_info()];
-    let ai_aliens_pda_seeds = [AI_ALIENS_PDA_SEED.as_bytes(), &[ctx.bumps.ai_aliens_pda]];
-    let signer_seeds = [&ai_aliens_pda_seeds[..]];
-    invoke_signed(&ix, &accounts, &signer_seeds)?;
 
     Ok(())
 }
@@ -150,8 +118,6 @@ fn transfer_lamports_for_nickname(ctx: &Context<CreateMint>, index: u16) -> Resu
 pub fn handle_create_mint(ctx: Context<CreateMint>, index: u16) -> Result<()> {
     check_max_supply(&ctx, index)?;
     pay_mint_price(&ctx)?;
-    init_mp_ext(&ctx)?;
-    init_mint(&ctx)?;
     init_metadata(&ctx, index)?;
     add_nickname_as_holder_meta(&ctx)?;
     transfer_lamports_for_nickname(&ctx, index)?;

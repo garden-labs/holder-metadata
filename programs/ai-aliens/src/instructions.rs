@@ -5,14 +5,9 @@ use crate::state::{AiAliensPda, NftMintedPda};
 use anchor_lang::{prelude::*, solana_program::rent::Rent};
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token_2022::Token2022,
-    token_interface::{Mint, TokenAccount},
+    token_interface::{Mint, Token2022, TokenAccount},
 };
 use holder_metadata::state::AnchorField;
-use spl_token_2022::{
-    extension::ExtensionType::{self, MetadataPointer},
-    state::Mint as MintState,
-};
 
 #[derive(Accounts)]
 pub struct UpdateState<'info> {
@@ -37,16 +32,23 @@ pub struct CreateMint<'info> {
     /// CHECK: Account checked in CPI
     #[account(
         init,
+        signer,
         payer = payer,
-        space = ExtensionType::try_calculate_account_len::<MintState>(&[MetadataPointer])?,
-        owner = token_program.key(),
+        mint::token_program = token_program,
+        mint::decimals = 0,
+        mint::authority = ai_aliens_pda,
+        mint::freeze_authority = ai_aliens_pda,
+        // extensions::metadata_pointer::authority = ai_aliens_pda,
+        // extensions::metadata_pointer::metadata_address = metadata,
+        // extensions::group_member_pointer::authority = ai_aliens_pda,
+        // extensions::transfer_hook::authority = ai_aliens_pda,
     )]
-    pub mint: UncheckedAccount<'info>,
+    pub mint: Box<InterfaceAccount<'info, Mint>>,
     /// CHECK: Account checked in CPI
     #[account(
         init,
         payer = payer,
-        space = get_token_metadata_init_space(index)?,
+        space = get_token_metadata_init_space(1)?,
         owner = metadata_program.key(),
     )]
     pub metadata: UncheckedAccount<'info>,
