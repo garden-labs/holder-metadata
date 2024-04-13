@@ -78,6 +78,17 @@ describe("AI Aliens Program", () => {
     ensureExampleProgramDeployed();
   });
 
+  it("Handle init", async () => {
+    const { program } = setAiAliensPayer(ANCHOR_WALLET_KEYPAIR);
+
+    await program.methods
+      .init(maxSupply, new BN(mintPriceLamports.toString()))
+      .accounts({
+        aiAliensPda,
+      })
+      .rpc();
+  });
+
   it("Update state", async () => {
     const { program } = setAiAliensPayer(ANCHOR_WALLET_KEYPAIR);
 

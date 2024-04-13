@@ -17,13 +17,25 @@ use spl_token_2022::{
 };
 
 #[derive(Accounts)]
+pub struct Init<'info> {
+    #[account(mut, address = get_creator_pubkey()?)]
+    pub creator: Signer<'info>,
+    #[account(
+        init,
+        space = AiAliensPda::LEN,
+        payer = creator,
+        seeds = [AI_ALIENS_PDA_SEED.as_bytes()],
+        bump)
+    ]
+    pub ai_aliens_pda: Account<'info, AiAliensPda>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
 pub struct UpdateState<'info> {
     #[account(mut, address = get_creator_pubkey()?)]
     pub creator: Signer<'info>,
     #[account(
-        init_if_needed,
-        space = AiAliensPda::LEN,
-        payer = creator,
         seeds = [AI_ALIENS_PDA_SEED.as_bytes()],
         bump)
     ]

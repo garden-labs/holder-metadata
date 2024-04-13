@@ -11,6 +11,14 @@ use spl_token_2022::{
     instruction::{initialize_mint2, initialize_permanent_delegate},
 };
 
+pub fn handle_init(ctx: Context<Init>, max_supply: u16, mint_price_lamports: u64) -> Result<()> {
+    // Set PDA data
+    ctx.accounts.ai_aliens_pda.max_supply = max_supply;
+    ctx.accounts.ai_aliens_pda.mint_price_lamports = mint_price_lamports;
+
+    Ok(())
+}
+
 pub fn handle_update_state(
     ctx: Context<UpdateState>,
     max_supply: u16,
