@@ -19,6 +19,8 @@ pub fn handle_init(
     mint_price_lamports: u64,
 ) -> Result<()> {
     // Set PDA data
+    ctx.accounts.ai_aliens_pda.admin = admin;
+    ctx.accounts.ai_aliens_pda.treasury = treasury;
     ctx.accounts.ai_aliens_pda.max_supply = max_supply;
     ctx.accounts.ai_aliens_pda.mint_price_lamports = mint_price_lamports;
 

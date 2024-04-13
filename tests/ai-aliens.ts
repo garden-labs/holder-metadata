@@ -89,6 +89,15 @@ describe("AI Aliens Program", () => {
         aiAliensPda,
       })
       .rpc();
+
+    // Check state
+    const aiAliensPdaData = await program.account.aiAliensPda.fetch(
+      aiAliensPda
+    );
+    assert(aiAliensPdaData.admin.equals(admin));
+    assert(aiAliensPdaData.treasury.equals(treasury));
+    assert.equal(aiAliensPdaData.maxSupply, maxSupply);
+    assert.equal(aiAliensPdaData.mintPriceLamports, mintPriceLamports);
   });
 
   it("Update state", async () => {
