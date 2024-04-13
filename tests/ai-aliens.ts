@@ -49,6 +49,8 @@ describe("AI Aliens Program", () => {
   const maxSupply = 1000;
   const mints: PublicKey[] = [];
   const metadatas: PublicKey[] = [];
+  const admin = ANCHOR_WALLET_KEYPAIR.publicKey;
+  const treasury = ANCHOR_WALLET_KEYPAIR.publicKey;
 
   const [aiAliensPda] = PublicKey.findProgramAddressSync(
     [Buffer.from(AI_ALIENS_AUTHORITY_PDA_SEED)],
@@ -82,7 +84,7 @@ describe("AI Aliens Program", () => {
     const { program } = setAiAliensPayer(ANCHOR_WALLET_KEYPAIR);
 
     await program.methods
-      .init(maxSupply, new BN(mintPriceLamports.toString()))
+      .init(admin, treasury, maxSupply, new BN(mintPriceLamports.toString()))
       .accounts({
         aiAliensPda,
       })
