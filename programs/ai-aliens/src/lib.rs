@@ -29,10 +29,12 @@ pub mod ai_aliens {
 
     pub fn update_state(
         ctx: Context<UpdateState>,
+        admin: Pubkey,
+        treasury: Pubkey,
         max_supply: u16,
         mint_price_lamports: u64,
     ) -> Result<()> {
-        return handle_update_state(ctx, max_supply, mint_price_lamports);
+        return handle_update_state(ctx, admin, treasury, max_supply, mint_price_lamports);
     }
 
     pub fn create_mint(ctx: Context<CreateMint>, index: u16) -> Result<()> {

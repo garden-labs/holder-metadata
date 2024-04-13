@@ -50,7 +50,7 @@ describe("AI Aliens Program", () => {
   const mints: PublicKey[] = [];
   const metadatas: PublicKey[] = [];
   const admin = ANCHOR_WALLET_KEYPAIR.publicKey;
-  const treasury = ANCHOR_WALLET_KEYPAIR.publicKey;
+  const treasury = Keypair.generate().publicKey;
 
   const [aiAliensPda] = PublicKey.findProgramAddressSync(
     [Buffer.from(AI_ALIENS_AUTHORITY_PDA_SEED)],
@@ -83,8 +83,17 @@ describe("AI Aliens Program", () => {
   it("Handle init", async () => {
     const { program } = setAiAliensPayer(ANCHOR_WALLET_KEYPAIR);
 
+    const tempTreasury = Keypair.generate().publicKey;
+    const tempMaxSupply = 0;
+    const tempMintPriceLamports = 0;
+
     await program.methods
-      .init(admin, treasury, maxSupply, new BN(mintPriceLamports.toString()))
+      .init(
+        admin,
+        tempTreasury,
+        tempMaxSupply,
+        new BN(tempMintPriceLamports.toString())
+      )
       .accounts({
         aiAliensPda,
       })
@@ -95,16 +104,21 @@ describe("AI Aliens Program", () => {
       aiAliensPda
     );
     assert(aiAliensPdaData.admin.equals(admin));
-    assert(aiAliensPdaData.treasury.equals(treasury));
-    assert.equal(aiAliensPdaData.maxSupply, maxSupply);
-    assert.equal(aiAliensPdaData.mintPriceLamports, mintPriceLamports);
+    assert(aiAliensPdaData.treasury.equals(tempTreasury));
+    assert.equal(aiAliensPdaData.maxSupply, tempMaxSupply);
+    assert.equal(aiAliensPdaData.mintPriceLamports, tempMintPriceLamports);
   });
 
   it("Update state", async () => {
     const { program } = setAiAliensPayer(ANCHOR_WALLET_KEYPAIR);
 
     await program.methods
-      .updateState(maxSupply, new BN(mintPriceLamports.toString()))
+      .updateState(
+        admin,
+        treasury,
+        maxSupply,
+        new BN(mintPriceLamports.toString())
+      )
       .accounts({
         aiAliensPda,
       })
@@ -114,6 +128,7 @@ describe("AI Aliens Program", () => {
     const aiAliensPdaData = await program.account.aiAliensPda.fetch(
       aiAliensPda
     );
+    assert(aiAliensPdaData.treasury.equals(treasury));
     assert.equal(aiAliensPdaData.maxSupply, maxSupply);
     assert.equal(aiAliensPdaData.mintPriceLamports, mintPriceLamports);
   });
@@ -138,11 +153,12 @@ describe("AI Aliens Program", () => {
       EXAMPLE_PROGRAM_ID
     );
 
-    const aiAliensPdaBalanceBefore = await CONNECTION.getBalance(aiAliensPda);
+    const treasuryBalanceBefore = await CONNECTION.getBalance(treasury);
 
     await program.methods
       .createMint(index)
       .accounts({
+        treasury,
         mint: mintKeypair.publicKey,
         metadata: metadataKeypair.publicKey,
         nftMintedPda,
@@ -154,12 +170,12 @@ describe("AI Aliens Program", () => {
       .signers([mintKeypair, metadataKeypair])
       .rpc();
 
-    const aiAliensPdaBalanceAfter = await CONNECTION.getBalance(aiAliensPda);
+    const treasuryBalanceAfter = await CONNECTION.getBalance(treasury);
 
     // Check mint price transfer
     assert.equal(
-      aiAliensPdaBalanceBefore,
-      aiAliensPdaBalanceAfter - mintPriceLamports
+      treasuryBalanceBefore,
+      treasuryBalanceAfter - mintPriceLamports
     );
 
     // Check mint minted PDA
