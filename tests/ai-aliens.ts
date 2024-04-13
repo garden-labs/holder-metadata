@@ -359,10 +359,7 @@ describe("AI Aliens Program", () => {
     });
   });
 
-  async function updateUriWithCreator(
-    index: number,
-    uri: string
-  ): Promise<void> {
+  async function updateUriWithAdmin(index: number, uri: string): Promise<void> {
     const { program } = setAiAliensPayer(ANCHOR_WALLET_KEYPAIR);
 
     const fieldParam = toAnchorParam(Field.Uri);
@@ -371,7 +368,6 @@ describe("AI Aliens Program", () => {
     await program.methods
       .updateField(fieldParam, uri)
       .accounts({
-        creator: ANCHOR_WALLET_KEYPAIR.publicKey,
         metadata,
         aiAliensPda,
         metadataProgram: EXAMPLE_PROGRAM_ID,
@@ -388,12 +384,12 @@ describe("AI Aliens Program", () => {
     assert.deepStrictEqual(emittedMetadata, metadataVals);
   }
 
-  it("Update field with creator", async () => {
+  it("Update field with admin", async () => {
     const index = 2;
-    await updateUriWithCreator(index, "test-uri-update");
+    await updateUriWithAdmin(index, "test-uri-update");
 
     // Clean this up because we use this value live on devnet
     const metadataVals = getMetadataVals(index);
-    await updateUriWithCreator(index, metadataVals.uri);
+    await updateUriWithAdmin(index, metadataVals.uri);
   });
 });
