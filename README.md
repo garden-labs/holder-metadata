@@ -2,6 +2,8 @@
 
 Full docs: <a href="https://www.holdermetadata.com/">holdermetadata.com</a>
 
+Example collection: <a href="https://www.ai-aliens.xyz/">ai-alienx.xyz</a>
+
 ### Programs
 
 - `programs-vanilla/field-authority-interface`: Interface that works in concert with the <a href="https://forum.solana.com/t/srfc-00017-token-metadata-interface/283">Token Metadata Interface</a> which allows field-based update authority.
