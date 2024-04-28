@@ -131,8 +131,7 @@ pub struct UpdateField<'info> {
     pub metadata_program: UncheckedAccount<'info>,
 }
 
-// TODO: Remove this method once we're done
-// NOTE: We'll allow anyone to call this because we want to run this on all mints
+// NOTE: We allow anyone to call this to make running it on all mints easier
 #[derive(Accounts)]
 #[instruction(index: u16)]
 pub struct NullifyMintAuthority<'info> {
